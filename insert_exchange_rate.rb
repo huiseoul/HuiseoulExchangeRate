@@ -9,7 +9,7 @@ end
 
 @client = Slack::Web::Client.new
 
-class Currency < ActiveResource::Base
+class ExchangeRate < ActiveResource::Base
   self.site = "http://localhost:3000"
 end
 
@@ -34,14 +34,14 @@ rescue
   nil
 end
 
-def insert_currency
-  currency_info = call_yahoo_api
+def insert_exchange_rate
+  exchange_rate_info = call_yahoo_api
 
-  return unless currency_info
+  return unless exchange_rate_info
 
-  response = Currency.create(
-    name: currency_info['Name'],
-    rate: currency_info['Rate']
+  response = ExchangeRate.create(
+    name: exchange_rate_info['Name'],
+    rate: exchange_rate_info['Rate']
   )
 
   if response.id
@@ -59,4 +59,4 @@ def insert_currency
   end
 end
 
-insert_currency
+insert_exchange_rate

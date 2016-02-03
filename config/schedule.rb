@@ -23,6 +23,6 @@ def root_path
   File.absolute_path(__FILE__).sub(/[^\/]+\Z/, '')
 end
 
-every :day, at: '9:00 am' do
+every 3.hours do
   command "ruby #{File.join(root_path, '../insert_exchange_rate.rb')}"
 end

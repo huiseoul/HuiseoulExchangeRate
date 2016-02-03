@@ -10,11 +10,11 @@ end
 @client = Slack::Web::Client.new
 
 class ExchangeRate < ActiveResource::Base
-  self.site = "http://localhost:3000"
+  self.site = "http://xox.huiseoul.com"
 end
 
 def call_yahoo_api
-  api_url = URI.parse('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.xchange%20where%20pair%20in%20(%22USDCNY%22)&format=json&env=store://datatables.org/alltableswithkeys&callback=')
+  api_url = URI.parse('http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.xchange%20where%20pair%20in%20(%22USDCNY%22)&format=json&env=store://datatables.org/alltableswithkeys')
 
   request = Net::HTTP::Get.new(api_url.to_s)
   response = Net::HTTP.start(api_url.host, api_url.port) do |http|
@@ -34,20 +34,29 @@ rescue
   nil
 end
 
-def insert_exchange_rate
+def update
   exchange_rate_info = call_yahoo_api
 
   return unless exchange_rate_info
 
+  from, to = exchange_rate_info['Name'].split('/')
+  rate = exchange_rate_info['Rate']
+
+  insert_exchange_rate(from, to, rate)
+  insert_exchange_rate(to, from, (1 / rate.to_f).round(4))
+end
+
+def insert_exchange_rate(from, to, rate)
   response = ExchangeRate.create(
-    name: exchange_rate_info['Name'],
-    rate: exchange_rate_info['Rate']
+    from: from,
+    to: to,
+    rate: rate
   )
 
   if response.id
     @client.chat_postMessage(
       channel: '#z_huibot',
-      text: "환율이 업데이트 되었습니다. #{response.name}: #{response.rate}",
+      text: "환율이 업데이트 되었습니다. #{response.from}/#{response.to}: #{response.rate}",
       as_user: true
     )
   else
@@ -59,4 +68,4 @@ def insert_exchange_rate
   end
 end
 
-insert_exchange_rate
+update

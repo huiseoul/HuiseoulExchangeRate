@@ -26,7 +26,7 @@ def call_yahoo_api
   json['query']['results']['rate']
 rescue
   @client.chat_postMessage(
-    channel: '#z_huibot',
+    channel: '#k_engineering',
     text: "@here: 환율 정보를 가져오는데 실패하였습니다. #{response}",
     as_user: true
   )
@@ -55,13 +55,13 @@ def insert_exchange_rate(from, to, rate)
 
   if response.id
     @client.chat_postMessage(
-      channel: '#z_huibot',
+      channel: '#k_engineering',
       text: "환율이 업데이트 되었습니다. #{response.from}/#{response.to}: #{response.rate}",
       as_user: true
     )
   else
     @client.chat_postMessage(
-      channel: '#z_huibot',
+      channel: '#k_engineering',
       text: "@here: 환율 업데이트에 실패하였습니다. #{response}",
       as_user: true
     )

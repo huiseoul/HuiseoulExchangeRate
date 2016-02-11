@@ -53,13 +53,7 @@ def insert_exchange_rate(from, to, rate)
     rate: rate
   )
 
-  if response.id
-    @client.chat_postMessage(
-      channel: '#k_engineering',
-      text: "환율이 업데이트 되었습니다. #{response.from}/#{response.to}: #{response.rate}",
-      as_user: true
-    )
-  else
+  unless response.id
     @client.chat_postMessage(
       channel: '#k_engineering',
       text: "@here: 환율 업데이트에 실패하였습니다. #{response}",

@@ -10,7 +10,7 @@ end
 @client = Slack::Web::Client.new
 
 class ExchangeRate < ActiveResource::Base
-  self.site = "http://xox.huiseoul.com"
+  self.site = "http://www.huiseoul.com"
 end
 
 def call_yahoo_api
@@ -26,8 +26,8 @@ def call_yahoo_api
   json['query']['results']['rate']
 rescue
   @client.chat_postMessage(
-    channel: '#k_engineering',
-    text: "@here: 환율 정보를 가져오는데 실패하였습니다. #{response}",
+    channel: '#k_engineering_noti',
+    text: "@channel: 환율 정보를 가져오는데 실패하였습니다. #{response}",
     as_user: true
   )
 
@@ -55,11 +55,19 @@ def insert_exchange_rate(from, to, rate)
 
   unless response.id
     @client.chat_postMessage(
-      channel: '#k_engineering',
-      text: "@here: 환율 업데이트에 실패하였습니다. #{response}",
+      channel: '#k_engineering_noti',
+      text: "@hchannel: 환율 업데이트에 실패하였습니다. #{response}",
       as_user: true
     )
   end
 end
 
-update
+begin
+  update
+rescue Exception => e
+  @client.chat_postMessage(
+    channel: '#k_engineering_noti',
+    text: "@channel: 환율 업데이트 실행 중 에러가 발생하였습니다. #{e}",
+    as_user: true
+  )
+end

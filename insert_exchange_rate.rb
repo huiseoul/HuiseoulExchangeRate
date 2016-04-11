@@ -10,7 +10,7 @@ end
 @client = Slack::Web::Client.new
 
 class ExchangeRate < ActiveResource::Base
-  self.site = "http://www.huiseoul.com"
+  self.site = "https://www.huiseoul.com"
 end
 
 def call_yahoo_api
@@ -56,7 +56,7 @@ def insert_exchange_rate(from, to, rate)
   unless response.id
     @client.chat_postMessage(
       channel: '#k_engineering_noti',
-      text: "@hchannel: 환율 업데이트에 실패하였습니다. #{response}",
+      text: "@channel: 환율 업데이트에 실패하였습니다. #{response}",
       as_user: true
     )
   end
